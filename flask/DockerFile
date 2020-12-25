@@ -1,0 +1,12 @@
+FROM python:3
+
+WORKDIR /app
+
+RUN pip install flask flask_cors
+
+COPY . .
+
+CMD ["flask", "run", "--host=0.0.0.0", "debug=True" "-p", "5000"]
+
+
+

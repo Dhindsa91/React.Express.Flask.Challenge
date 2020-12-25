@@ -1,0 +1,55 @@
+version: '3'
+services:
+
+########################
+# Setup express server container
+########################
+  server:
+    build: 
+      context: ./express
+      dockerfile: DockerFile
+    expose:
+      - ${APP_SERVER_PORT}
+    environment: 
+      API_HOST: ${API_HOST}
+      APP_SERVER_PORT: ${APP_SERVER_PORT}
+    ports:
+      - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
+    # volumes:
+    #   - ./server/src:/srv/app/server/src
+    command: npm start
+
+########################
+# Setup flask server container
+########################
+  pyserver:
+    build: 
+      context: ./flask
+      dockerfile: DockerFile
+    expose:
+      - ${FLASK_PORT}
+    environment: 
+      API_HOST: ${FLASK_HOST}
+      APP_SERVER_PORT: ${FLASK_PORT}
+    ports:
+      - ${FLASK_PORT}:${FLASK_PORT}
+    command: flask run
+
+########################
+# Setup client container
+########################
+  client:
+    build: 
+      context: ./client
+      dockerfile: DockerFile
+    environment:
+      - REACT_APP_PORT=${REACT_APP_PORT}
+    expose:
+      - ${REACT_APP_PORT}
+    ports:
+      - ${REACT_APP_PORT}:${REACT_APP_PORT}
+    links:
+      - server
+      - pyserver
+    command: npm start
+    
